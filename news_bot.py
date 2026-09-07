@@ -2,15 +2,20 @@ import os
 import requests
 import google.generativeai as genai
 
-# 금고(환경 변수)에서 키를 꺼내오는 코드입니다.
 NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-# --- 이 아래는 이전 코드와 동일합니다 ---
 headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
 res = requests.get("https://openapi.naver.com/v1/search/news.json?query=경제&display=3", headers=headers)
+
+# --- 에러 확인 코드 ---
+if res.status_code != 200:
+    print(f"네이버 API 에러 발생: {res.text}")
+    exit(1)
+# --------------------
+
 news_data = res.json()['items']
 
 genai.configure(api_key=GEMINI_API_KEY)
