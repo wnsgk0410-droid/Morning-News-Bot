@@ -7,14 +7,19 @@ NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-headers = {"X-Naver-Client-Id": NAVER_CLIENT_ID, "X-Naver-Client-Secret": NAVER_CLIENT_SECRET}
-res = requests.get("https://openapi.naver.com/v1/search/news.json?query=경제&display=3", headers=headers)
+# 1. 완전히 바뀐 네이버 API 헤더 규격 적용
+headers = {
+    "X-NCP-APIGW-API-KEY-ID": NAVER_CLIENT_ID,
+    "X-NCP-APIGW-API-KEY": NAVER_CLIENT_SECRET
+}
 
-# --- 에러 확인 코드 ---
+# 2. 완전히 바뀐 네이버 API 주소 적용 (경제 뉴스 3개, 최신순 정렬)
+url = "https://naverapihub.apigw.ntruss.com/search/v1/news?query=경제&display=3&sort=date"
+res = requests.get(url, headers=headers)
+
 if res.status_code != 200:
     print(f"네이버 API 에러 발생: {res.text}")
     exit(1)
-# --------------------
 
 news_data = res.json()['items']
 
