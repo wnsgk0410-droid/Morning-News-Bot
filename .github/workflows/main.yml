@@ -1,0 +1,28 @@
+name: Morning News Bot
+
+on:
+  schedule:
+    - cron: '0 22 * * *' # 한국 시간 아침 7시
+  workflow_dispatch: # 수동으로 바로 실행해 볼 수 있는 버튼
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      
+    - name: Run script
+      env: # 깃허브 금고에 있는 키를 파이썬으로 넘겨주는 역할
+        NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+        NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: python news_bot.py
